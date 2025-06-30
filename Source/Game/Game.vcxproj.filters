@@ -7,7 +7,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Game\Main.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
