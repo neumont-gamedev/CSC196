@@ -1,6 +1,5 @@
 #include "Renderer.h"
 
-
 namespace viper {
     bool Renderer::Initialize() {
         if (!SDL_Init(SDL_INIT_VIDEO)) {
