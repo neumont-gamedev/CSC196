@@ -4,9 +4,8 @@
 #include "Core/Time.h"
 #include "Renderer/Renderer.h"
 #include "Input/InputSystem.h"
+#include "Audio/AudioSystem.h"
 
-#include <fmod.hpp>
-#include <SDL3/SDL.h>
 #include <iostream>
 #include <vector>
 
@@ -22,33 +21,15 @@ int main(int argc, char* argv[]) {
     input.Initialize();
 
     // create audio system
-    FMOD::System* audio;
-    FMOD::System_Create(&audio);
+    viper::AudioSystem audio;
+    audio.Initialize();
 
-    void* extradriverdata = nullptr;
-    audio->init(32, FMOD_INIT_NORMAL, extradriverdata);
-
-    // initialize objects
-
-    FMOD::Sound* sound = nullptr;
-    std::vector<FMOD::Sound*> sounds;
-    audio->createSound("bass.wav", FMOD_DEFAULT, 0, &sound);
-    sounds.push_back(sound);
-
-    audio->createSound("snare.wav", FMOD_DEFAULT, 0, &sound);
-    sounds.push_back(sound);
-
-    audio->createSound("clap.wav", FMOD_DEFAULT, 0, &sound);
-    sounds.push_back(sound);
-
-    audio->createSound("close-hat.wav", FMOD_DEFAULT, 0, &sound);
-    sounds.push_back(sound);
-
-    audio->createSound("open-hat.wav", FMOD_DEFAULT, 0, &sound);
-    sounds.push_back(sound);
-
-    audio->createSound("test.wav", FMOD_DEFAULT, 0, &sound);
-    audio->playSound(sound, 0, false, nullptr);
+    // initialize sounds
+    audio.AddSound("bass.wav", "bass");
+    audio.AddSound("snare.wav", "snare");
+    audio.AddSound("clap.wav", "clap");
+    audio.AddSound("close-hat.wav", "close-hat");
+    audio.AddSound("open-hat.wav", "open-hat");
 
     // create stars
     std::vector<viper::vec2> stars;
@@ -69,15 +50,15 @@ int main(int argc, char* argv[]) {
         }
 
         // update engine systems
-        audio->update();
+        audio.Update();
         input.Update();
 
         // play drum sounds
-        if (input.GetKeyPressed(SDL_SCANCODE_A)) audio->playSound(sounds[0], 0, false, nullptr);
-        if (input.GetKeyPressed(SDL_SCANCODE_S)) audio->playSound(sounds[1], 0, false, nullptr);
-        if (input.GetKeyPressed(SDL_SCANCODE_D)) audio->playSound(sounds[2], 0, false, nullptr);
-        if (input.GetKeyPressed(SDL_SCANCODE_F)) audio->playSound(sounds[3], 0, false, nullptr);
-        if (input.GetKeyPressed(SDL_SCANCODE_G)) audio->playSound(sounds[4], 0, false, nullptr);
+        if (input.GetKeyPressed(SDL_SCANCODE_A)) audio.PlaySound("bass");
+        if (input.GetKeyPressed(SDL_SCANCODE_S)) audio.PlaySound("snare");
+        if (input.GetKeyPressed(SDL_SCANCODE_D)) audio.PlaySound("clap");
+        if (input.GetKeyPressed(SDL_SCANCODE_F)) audio.PlaySound("close-hat");
+        if (input.GetKeyPressed(SDL_SCANCODE_G)) audio.PlaySound("open-hat");
 
         // draw
         renderer.SetColor(0, 0, 0);
@@ -100,6 +81,7 @@ int main(int argc, char* argv[]) {
     }
 
     renderer.Shutdown();
+    audio.Shutdown();
 
     return 0;
 }
