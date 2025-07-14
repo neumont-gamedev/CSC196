@@ -19,20 +19,20 @@ namespace viper {
 		Vector3 operator * (const Vector3& v) const { return Vector3{ x * v.x, y * v.y, z * v.z }; }
 		Vector3 operator / (const Vector3& v) const { return Vector3{ x / v.x, y / v.y, z / v.z }; }
 
-		Vector3 operator + (float s) const { return Vector3{ x + s, y + s }; }
-		Vector3 operator - (float s) const { return Vector3{ x - s, y - s }; }
-		Vector3 operator * (float s) const { return Vector3{ x * s, y * s }; }
-		Vector3 operator / (float s) const { return Vector3{ x / s, y / s }; }
+		Vector3 operator + (float s) const { return Vector3{ x + s, y + s, z + s };	}
+		Vector3 operator - (float s) const { return Vector3{ x - s, y - s, z - s }; }
+		Vector3 operator * (float s) const { return Vector3{ x * s, y * s, z * s }; }
+		Vector3 operator / (float s) const { return Vector3{ x / s, y / s, z / s }; }
 
-		Vector3& operator += (const Vector3& v) { x += v.x; y += v.y; return *this; }
-		Vector3& operator -= (const Vector3& v) { x -= v.x; y -= v.y; return *this; }
-		Vector3& operator *= (const Vector3& v) { x *= v.x; y *= v.y; return *this; }
-		Vector3& operator /= (const Vector3& v) { x /= v.x; y /= v.y; return *this; }
+		Vector3& operator += (const Vector3& v) { x += v.x; y += v.y; z += v.z; return *this; }
+		Vector3& operator -= (const Vector3& v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
+		Vector3& operator *= (const Vector3& v) { x *= v.x; y *= v.y; z *= v.z; return *this; }
+		Vector3& operator /= (const Vector3& v) { x /= v.x; y /= v.y; z /= v.z; return *this; }
 
-		Vector3& operator += (float s) { x += s; y += s; return *this; }
-		Vector3& operator -= (float s) { x -= s; y -= s; return *this; }
-		Vector3& operator *= (float s) { x *= s; y *= s; return *this; }
-		Vector3& operator /= (float s) { x /= s; y /= s; return *this; }
+		Vector3& operator += (float s) { x += s; y += s; z += s; return *this; }
+		Vector3& operator -= (float s) { x -= s; y -= s; z -= s; return *this; }
+		Vector3& operator *= (float s) { x *= s; y *= s; z *= s; return *this; }
+		Vector3& operator /= (float s) { x /= s; y /= s; z /= s; return *this; }
 
 		/// <summary>
 		/// Calculates the squared length (magnitude) of a 3D vector.
