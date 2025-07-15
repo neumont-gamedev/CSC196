@@ -1,8 +1,10 @@
 #include "Math/Math.h"
 #include "Math/Vector2.h"
+#include "Math/Vector3.h"
 #include "Core/Random.h"
 #include "Core/Time.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/Model.h"
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
 
@@ -10,6 +12,7 @@
 #include <vector>
 
 int main(int argc, char* argv[]) {
+
     // intialize engine systems
     viper::Time time;
 
@@ -23,6 +26,17 @@ int main(int argc, char* argv[]) {
     // create audio system
     viper::AudioSystem audio;
     audio.Initialize();
+    
+
+    std::vector<viper::vec2> points{ 
+        { -5, -5 },
+        {  5, -5 },
+        {  5,  5 },
+        { -5,  5 },
+        { -5, -5 },
+    };
+
+    viper::Model model{ points, { 0, 0, 1 } };
 
     // initialize sounds
     audio.AddSound("bass.wav", "bass");
@@ -46,8 +60,11 @@ int main(int argc, char* argv[]) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
                 quit = true;
-            }
+            }            
         }
+
+
+        if (input.GetKeyPressed(SDL_SCANCODE_ESCAPE)) quit = true;
 
         // update engine systems
         audio.Update();
@@ -61,9 +78,13 @@ int main(int argc, char* argv[]) {
         if (input.GetKeyPressed(SDL_SCANCODE_G)) audio.PlaySound("open-hat");
 
         // draw
-        renderer.SetColor(0, 0, 0);
+        viper::vec3 color{ 0, 0, 0 };
+
+        renderer.SetColor(color.r, color.g, color.b);
         renderer.Clear();
         
+        model.Draw(renderer, input.GetMousePosition(), time.GetTime(), 10.0f);
+
         viper::vec2 speed{ -140.0f, 0.0f };
         float length = speed.Length();
 
@@ -73,7 +94,7 @@ int main(int argc, char* argv[]) {
             if (star[0] > 1280) star[0] = 0;
             if (star[0] < 0) star[0] = 1280;
 
-            renderer.SetColor(viper::random::getRandomInt(256), viper::random::getRandomInt(256), viper::random::getRandomInt(256));
+            renderer.SetColor((uint8_t)viper::random::getRandomInt(256), viper::random::getRandomInt(256), viper::random::getRandomInt(256));
             renderer.DrawPoint(star.x, star.y);
         }
         

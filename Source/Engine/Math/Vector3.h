@@ -6,7 +6,10 @@ namespace viper {
 	template<typename T>
 	struct Vector3
 	{
-		T x, y, z;
+		union {
+			struct { T x, y, z; };
+			struct { T r, g, b; };
+		};
 
 		Vector3() = default;
 		Vector3(T x, T y, T z) : x{ x }, y{ y }, z{ z } {}
@@ -38,7 +41,7 @@ namespace viper {
 		/// Calculates the squared length (magnitude) of a 3D vector.
 		/// </summary>
 		/// <returns>The sum of the squares of the x, y, and z components of the vector.</returns>
-		float LengthSqr() const { return (x * x) + (y * y) + (z * Z); }
+		float LengthSqr() const { return (x * x) + (y * y) + (z * z); }
 
 		/// <summary>
 		/// Calculates the length (magnitude) of the vector.
