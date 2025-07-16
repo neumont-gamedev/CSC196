@@ -1,8 +1,10 @@
 #include "Math/Math.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
+#include "Math/Transform.h"
 #include "Core/Random.h"
 #include "Core/Time.h"
+#include "Game/Actor.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Model.h"
 #include "Input/InputSystem.h"
@@ -36,7 +38,14 @@ int main(int argc, char* argv[]) {
         { -5, -5 },
     };
 
-    viper::Model model{ points, { 0, 0, 1 } };
+    viper::Model* model = new viper::Model{ points, viper::vec3{ 0, 0, 1 } };
+
+    std::vector<viper::Actor> actors;
+    for (int i = 0; i < 10; i++) {
+        viper::Transform transform{ viper::vec2{ viper::random::getRandomFloat() * 1280, viper::random::getRandomFloat() * 1024 }, 0, 10};
+        viper::Actor actor{ transform, model };
+        actors.push_back(actor);
+    }
 
     // initialize sounds
     audio.AddSound("bass.wav", "bass");
@@ -71,11 +80,30 @@ int main(int argc, char* argv[]) {
         input.Update();
 
         // play drum sounds
-        if (input.GetKeyPressed(SDL_SCANCODE_A)) audio.PlaySound("bass");
-        if (input.GetKeyPressed(SDL_SCANCODE_S)) audio.PlaySound("snare");
-        if (input.GetKeyPressed(SDL_SCANCODE_D)) audio.PlaySound("clap");
-        if (input.GetKeyPressed(SDL_SCANCODE_F)) audio.PlaySound("close-hat");
-        if (input.GetKeyPressed(SDL_SCANCODE_G)) audio.PlaySound("open-hat");
+        //if (input.GetKeyPressed(SDL_SCANCODE_A)) audio.PlaySound("bass");
+        //if (input.GetKeyPressed(SDL_SCANCODE_S)) audio.PlaySound("snare");
+        //if (input.GetKeyPressed(SDL_SCANCODE_D)) audio.PlaySound("clap");
+        //if (input.GetKeyPressed(SDL_SCANCODE_F)) audio.PlaySound("close-hat");
+        //if (input.GetKeyPressed(SDL_SCANCODE_G)) audio.PlaySound("open-hat");
+
+        //if (input.GetKeyDown(SDL_SCANCODE_A)) transform.rotation -= viper::math::degToRad(90 * time.GetDeltaTime());
+        //if (input.GetKeyDown(SDL_SCANCODE_D)) transform.rotation += viper::math::degToRad(90 * time.GetDeltaTime());
+
+        float speed = 200;
+
+        viper::vec2 direction{ 0, 0 };
+        if (input.GetKeyDown(SDL_SCANCODE_W)) direction.y = -1; // speed* time.GetDeltaTime();
+        if (input.GetKeyDown(SDL_SCANCODE_S)) direction.y =  1; // speed* time.GetDeltaTime();
+        if (input.GetKeyDown(SDL_SCANCODE_A)) direction.x = -1; // speed* time.GetDeltaTime();
+        if (input.GetKeyDown(SDL_SCANCODE_D)) direction.x =  1; //speed * time.GetDeltaTime();
+
+        if (direction.LengthSqr() > 0) {
+            direction = direction.Normalized();
+            for (auto& actor : actors) {
+                actor.GetTransform().position += (direction * speed) * time.GetDeltaTime();
+            }
+            //actor.GetTransform().position += (direction * speed) * time.GetDeltaTime();
+        }
 
         // draw
         viper::vec3 color{ 0, 0, 0 };
@@ -83,13 +111,17 @@ int main(int argc, char* argv[]) {
         renderer.SetColor(color.r, color.g, color.b);
         renderer.Clear();
         
-        model.Draw(renderer, input.GetMousePosition(), time.GetTime(), 10.0f);
+        //model.Draw(renderer, input.GetMousePosition(), time.GetTime(), 10.0f);
+        //model.Draw(renderer, transform);
+        for (auto& actor : actors) {
+            actor.Draw(renderer);
+        }
 
-        viper::vec2 speed{ -140.0f, 0.0f };
-        float length = speed.Length();
+        viper::vec2 speedz{ -140.0f, 0.0f };
+        float length = speedz.Length();
 
         for (auto& star : stars) {
-            star += speed * time.GetDeltaTime();
+            star += speedz * time.GetDeltaTime();
 
             if (star[0] > 1280) star[0] = 0;
             if (star[0] < 0) star[0] = 1280;
