@@ -7,6 +7,8 @@
 #include "Framework/Actor.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Model.h"
+#include "Renderer/Font.h"
+#include "Renderer/Text.h"
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
 #include "Framework/Scene.h"
@@ -43,6 +45,12 @@ int main(int argc, char* argv[]) {
         std::unique_ptr<Player> player = std::make_unique<Player>(transform, model);
         scene.AddActor(std::move(player));
     }
+
+    viper::Font* font = new viper::Font();
+    font->Load("arcadeclassic.ttf", 24.0f);
+
+    viper::Text* text = new viper::Text(font);
+    text->Create(viper::GetEngine().GetRenderer(), "Hello, World!", viper::vec3{1, 1, 1});
 
     // initialize sounds
     viper::GetEngine().GetAudio().AddSound("bass.wav", "bass");
@@ -102,6 +110,8 @@ int main(int argc, char* argv[]) {
             viper::GetEngine().GetRenderer().SetColor((uint8_t)viper::random::getRandomInt(256), viper::random::getRandomInt(256), viper::random::getRandomInt(256));
             viper::GetEngine().GetRenderer().DrawPoint(star.x, star.y);
         }
+
+        text->Draw(viper::GetEngine().GetRenderer(), 40, 40);
         
         viper::GetEngine().GetRenderer().Present();
     }

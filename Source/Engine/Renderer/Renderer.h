@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <iostream>
 
 namespace viper {
@@ -23,6 +24,8 @@ namespace viper {
 		void DrawPoint(float x, float y);
 
 	private:
+		friend class Text;
+
 		SDL_Window* m_window = nullptr;
 		SDL_Renderer* m_renderer = nullptr;
 	};
