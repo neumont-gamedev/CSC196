@@ -4,14 +4,16 @@
 #include "Math/Transform.h"
 #include "Core/Random.h"
 #include "Core/Time.h"
-#include "Game/Actor.h"
+#include "Framework/Actor.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Model.h"
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
-#include "Game/Scene.h"
+#include "Framework/Scene.h"
 
 #include "Game/Player.h"
+
+#include "Engine.h"
 
 #include <iostream>
 #include <vector>
@@ -19,19 +21,10 @@
 
 int main(int argc, char* argv[]) {
 
-    // intialize engine systems
+    // intialize engine
+    viper::GetEngine().Initialize();
+
     viper::Time time;
-
-    std::unique_ptr<viper::Renderer> renderer = std::make_unique<viper::Renderer>();
-    renderer->Initialize();
-    renderer->CreateWindow("Viper Engine", 1280, 1024);
-
-    std::unique_ptr<viper::InputSystem> input = std::make_unique<viper::InputSystem>();
-    input->Initialize();
-
-    // create audio system
-    std::unique_ptr<viper::AudioSystem> audio = std::make_unique<viper::AudioSystem>();
-    audio->Initialize();
     
     std::vector<viper::vec2> points{ 
         { -5, -5 },
@@ -52,11 +45,11 @@ int main(int argc, char* argv[]) {
     }
 
     // initialize sounds
-    audio->AddSound("bass.wav", "bass");
-    audio->AddSound("snare.wav", "snare");
-    audio->AddSound("clap.wav", "clap");
-    audio->AddSound("close-hat.wav", "close-hat");
-    audio->AddSound("open-hat.wav", "open-hat");
+    viper::GetEngine().GetAudio().AddSound("bass.wav", "bass");
+    viper::GetEngine().GetAudio().AddSound("snare.wav", "snare");
+    viper::GetEngine().GetAudio().AddSound("clap.wav", "clap");
+    viper::GetEngine().GetAudio().AddSound("close-hat.wav", "close-hat");
+    viper::GetEngine().GetAudio().AddSound("open-hat.wav", "open-hat");
 
     // create stars
     std::vector<viper::vec2> stars;
@@ -76,48 +69,26 @@ int main(int argc, char* argv[]) {
             }            
         }
 
+        // update engine
+        viper::GetEngine().Update();
+        if (viper::GetEngine().GetInput().GetKeyPressed(SDL_SCANCODE_ESCAPE)) quit = true;
 
-        if (input->GetKeyPressed(SDL_SCANCODE_ESCAPE)) quit = true;
-
-        // update engine systems
-        audio->Update();
-        input->Update();
+        scene.Update(viper::GetEngine().GetTime().GetDeltaTime());
 
         // play drum sounds
-        //if (input.GetKeyPressed(SDL_SCANCODE_A)) audio.PlaySound("bass");
-        //if (input.GetKeyPressed(SDL_SCANCODE_S)) audio.PlaySound("snare");
-        //if (input.GetKeyPressed(SDL_SCANCODE_D)) audio.PlaySound("clap");
-        //if (input.GetKeyPressed(SDL_SCANCODE_F)) audio.PlaySound("close-hat");
-        //if (input.GetKeyPressed(SDL_SCANCODE_G)) audio.PlaySound("open-hat");
-
-        //if (input.GetKeyDown(SDL_SCANCODE_A)) transform.rotation -= viper::math::degToRad(90 * time.GetDeltaTime());
-        //if (input.GetKeyDown(SDL_SCANCODE_D)) transform.rotation += viper::math::degToRad(90 * time.GetDeltaTime());
-
-        float speed = 200;
-
-        viper::vec2 direction{ 0, 0 };
-        if (input->GetKeyDown(SDL_SCANCODE_W)) direction.y = -1; // speed* time.GetDeltaTime();
-        if (input->GetKeyDown(SDL_SCANCODE_S)) direction.y =  1; // speed* time.GetDeltaTime();
-        if (input->GetKeyDown(SDL_SCANCODE_A)) direction.x = -1; // speed* time.GetDeltaTime();
-        if (input->GetKeyDown(SDL_SCANCODE_D)) direction.x =  1; //speed * time.GetDeltaTime();
-
-        if (direction.LengthSqr() > 0) {
-            direction = direction.Normalized();
-            //for (auto& actor : actors) {
-            //    actor->GetTransform().position += (direction * speed) * time.GetDeltaTime();
-            //}
-            //actor.GetTransform().position += (direction * speed) * time.GetDeltaTime();
-        }
+        if (viper::GetEngine().GetInput().GetKeyPressed(SDL_SCANCODE_A)) viper::GetEngine().GetAudio().PlaySound("bass");
+        if (viper::GetEngine().GetInput().GetKeyPressed(SDL_SCANCODE_S)) viper::GetEngine().GetAudio().PlaySound("snare");
+        if (viper::GetEngine().GetInput().GetKeyPressed(SDL_SCANCODE_D)) viper::GetEngine().GetAudio().PlaySound("clap");
+        if (viper::GetEngine().GetInput().GetKeyPressed(SDL_SCANCODE_F)) viper::GetEngine().GetAudio().PlaySound("close-hat");
+        if (viper::GetEngine().GetInput().GetKeyPressed(SDL_SCANCODE_G)) viper::GetEngine().GetAudio().PlaySound("open-hat");
 
         // draw
         viper::vec3 color{ 0, 0, 0 };
 
-        renderer->SetColor(color.r, color.g, color.b);
-        renderer->Clear();
+        viper::GetEngine().GetRenderer().SetColor(color.r, color.g, color.b);
+        viper::GetEngine().GetRenderer().Clear();
         
-        //model.Draw(renderer, input.GetMousePosition(), time.GetTime(), 10.0f);
-        //model.Draw(renderer, transform);
-        scene.Draw(*renderer);
+        scene.Draw(viper::GetEngine().GetRenderer());
 
         viper::vec2 speedz{ -140.0f, 0.0f };
         float length = speedz.Length();
@@ -128,16 +99,14 @@ int main(int argc, char* argv[]) {
             if (star[0] > 1280) star[0] = 0;
             if (star[0] < 0) star[0] = 1280;
 
-            renderer->SetColor((uint8_t)viper::random::getRandomInt(256), viper::random::getRandomInt(256), viper::random::getRandomInt(256));
-            renderer->DrawPoint(star.x, star.y);
+            viper::GetEngine().GetRenderer().SetColor((uint8_t)viper::random::getRandomInt(256), viper::random::getRandomInt(256), viper::random::getRandomInt(256));
+            viper::GetEngine().GetRenderer().DrawPoint(star.x, star.y);
         }
         
-        renderer->Present();
+        viper::GetEngine().GetRenderer().Present();
     }
     
-    renderer->Shutdown();
-    audio->Shutdown();
-    input->Shutdown();
+    viper::GetEngine().Shutdown();
 
     return 0;
 }
