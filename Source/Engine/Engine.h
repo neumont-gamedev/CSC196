@@ -3,34 +3,34 @@
 #include <memory>
 
 namespace viper {
+	class Renderer;
 	class AudioSystem;
 	class InputSystem;
-	class Renderer;
 
 	class Engine {
 	public:
 		Engine() = default;
-		~Engine() = default;
 
 		bool Initialize();
 		void Shutdown();
-		void Update();
 
+		void Update();
 		void Draw();
 
-		const Time& GetTime() { return m_time; }
-
+		Renderer& GetRenderer() { return *m_renderer; }
 		AudioSystem& GetAudio() { return *m_audio; }
 		InputSystem& GetInput() { return *m_input; }
-		Renderer& GetRenderer() { return *m_renderer; }
+
+		Time& GetTime() { return m_time; }
 
 	private:
+		Time m_time;
+
+		std::unique_ptr<Renderer> m_renderer;
 		std::unique_ptr<AudioSystem> m_audio;
 		std::unique_ptr<InputSystem> m_input;
-		std::unique_ptr<Renderer> m_renderer;
-
-		Time m_time;
 	};
 
 	Engine& GetEngine();
+	inline Renderer& GetRenderer() { return GetEngine().GetRenderer(); }
 }
