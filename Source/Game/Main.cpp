@@ -70,24 +70,10 @@ int main(int argc, char* argv[]) {
 
         // draw
         viper::vec3 color{ 0, 0, 0 };
-
         viper::GetEngine().GetRenderer().SetColor(color.r, color.g, color.b);
         viper::GetEngine().GetRenderer().Clear();
 
         game->Draw();
-
-        viper::vec2 speedz{ -140.0f, 0.0f };
-        float length = speedz.Length();
-
-        for (auto& star : stars) {
-            star += speedz * viper::GetEngine().GetTime().GetDeltaTime();
-
-            if (star[0] > 1280) star[0] = 0;
-            if (star[0] < 0) star[0] = 1280;
-
-            viper::GetEngine().GetRenderer().SetColor((uint8_t)viper::random::getRandomInt(256), viper::random::getRandomInt(256), viper::random::getRandomInt(256));
-            viper::GetEngine().GetRenderer().DrawPoint(star.x, star.y);
-        }
 
         viper::GetEngine().GetRenderer().Present();
     }
@@ -98,3 +84,17 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+/*
+    viper::vec2 speedz{ -140.0f, 0.0f };
+    float length = speedz.Length();
+
+    for (auto& star : stars) {
+        star += speedz * viper::GetEngine().GetTime().GetDeltaTime();
+
+        if (star[0] > 1280) star[0] = 0;
+        if (star[0] < 0) star[0] = 1280;
+
+        viper::GetEngine().GetRenderer().SetColor((uint8_t)viper::random::getRandomInt(256), viper::random::getRandomInt(256), viper::random::getRandomInt(256));
+        viper::GetEngine().GetRenderer().DrawPoint(star.x, star.y);
+    }
+*/
