@@ -6,6 +6,7 @@
 #include "Renderer/Renderer.h"
 #include "Engine.h"
 #include "Player.h"
+#include "Enemy.h"
 
 #include <vector>
 
@@ -21,19 +22,42 @@ bool SpaceGame::Initialize()
         { 5, 0 },
     };
 
-    std::shared_ptr<viper::Model> model = std::make_shared<viper::Model>(points, viper::vec3{ 0.0f, 0.4f, 1.0f });
+    std::vector<viper::vec2> enemyPoints{
+        { -1, -2 },
+        { 1, -2 },
+        { 2, -1 },
+        { 5, 0 },
+        { 2, 1 },
+        { 1, 2 },
+        { -1, 2 },
+        { -2, 1 },
+        { -5, 0 },
+        { -2, -1 },
+        { -1, -2 },
+    };
 
+
+    // create player
+    std::shared_ptr<viper::Model> model = std::make_shared<viper::Model>(points, viper::vec3{ 0.0f, 0.4f, 1.0f });
     viper::Transform transform{ viper::vec2{ viper::GetEngine().GetRenderer().GetWidth() * 0.5f, viper::GetEngine().GetRenderer().GetHeight() * 0.5f }, 0, 5};
     std::unique_ptr<Player> player = std::make_unique<Player>(transform, model);
-    m_scene->AddActor(std::move(player));
+    player->speed = 1500.0f;
+    player->rotationRate = 180.0f;
+    player->damping = 1.5f;
+    player->name = "player";
 
-    /*
-    for (int i = 0; i < 10; i++) {
-        viper::Transform transform{ viper::vec2{ viper::random::getRandomFloat() * 1280, viper::random::getRandomFloat() * 1024 }, 0, 10 };
-        std::unique_ptr<Player> player = std::make_unique<Player>(transform, model);
-        m_scene->AddActor(std::move(player));
+    m_scene->AddActor(std::move(player));
+    
+    // create enemies
+    for (int i = 0; i < 1000; i++) {
+        std::shared_ptr<viper::Model> enemyModel = std::make_shared<viper::Model>(enemyPoints, viper::vec3{ viper::random::getReal(), viper::random::getReal(), viper::random::getReal() });
+        viper::Transform transform{ viper::vec2{ viper::random::getReal() * viper::GetEngine().GetRenderer().GetWidth(), viper::random::getReal() * viper::GetEngine().GetRenderer().GetHeight() }, 0, 10 };
+        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(transform, enemyModel);
+        enemy->damping = 0.2f;
+        enemy->speed = (viper::random::getReal() * 800) + 500;
+        m_scene->AddActor(std::move(enemy));
     }
-    */
+    
 
     return true;
 }
