@@ -1,19 +1,11 @@
-#include "Enemy.h"
+#include "Rocket.h"
 #include "Engine.h"
 #include "Framework/Scene.h"
 #include "Renderer/Renderer.h"
 #include "Player.h"
 
-void Enemy::Update(float dt)
+void Rocket::Update(float dt)
 {
-    Player* player = scene->GetActorByName<Player>("player");
-    if (player) {
-        viper::vec2 direction{ 0, 0 };
-        direction = player->transform.position - transform.position;
-        direction = direction.Normalized();
-        transform.rotation = viper::math::radToDeg(direction.Angle());
-    }
-
     viper::vec2 force = viper::vec2{ 1, 0 }.Rotate(viper::math::degToRad(transform.rotation)) * speed;
     velocity += force * dt;
 
