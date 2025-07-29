@@ -71,6 +71,7 @@ int main(int argc, char* argv[]) {
     }
 
     game->Shutdown();
+    game.release();
     viper::GetEngine().Shutdown();
 
     return 0;

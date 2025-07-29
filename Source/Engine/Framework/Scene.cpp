@@ -9,9 +9,34 @@ namespace viper {
 	/// </summary>
 	/// <param name="dt">The time elapsed since the last update, in seconds.</param>
 	void Scene::Update(float dt) {
+		// update all actors
 		for (auto& actor : m_actors) {
 			actor->Update(dt);
 		}
+
+		// remove destroyed actors
+		for (auto iter = m_actors.begin(); iter != m_actors.end(); ) {
+			if ((*iter)->destroyed) {
+				iter = m_actors.erase(iter);
+			}
+			else {
+				iter++;
+			}
+		}
+
+		// check for collisions
+		for (auto& actorA : m_actors) {
+			for (auto& actorB : m_actors) {
+				if (actorA == actorB || (actorA->destroyed || actorB->destroyed)) continue;
+
+				float distance = (actorA->transform.position - actorB->transform.position).Length();
+				if (distance <= actorA->GetRadius() + actorB->GetRadius()) {
+					actorA->OnCollision(actorB.get());
+					actorB->OnCollision(actorA.get());
+				}
+			}
+		}
+
 	}
 
 	/// <summary>
