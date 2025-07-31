@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
         viper::GetEngine().GetRenderer().SetColor(color.r, color.g, color.b);
         viper::GetEngine().GetRenderer().Clear();
 
-        game->Draw();
+        game->Draw(viper::GetEngine().GetRenderer());
 
         viper::GetEngine().GetRenderer().Present();
     }
